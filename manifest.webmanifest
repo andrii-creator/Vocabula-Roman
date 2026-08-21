@@ -1,0 +1,9 @@
+{
+  "name":"Vocabula Romana",
+  "short_name":"Vocabula",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#cdb98e",
+  "theme_color":"#641b1b",
+  "lang":"de"
+}

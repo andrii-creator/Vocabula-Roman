@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#641b1b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vocabula Romana">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Vocabula Romana</title>
+<style>
+:root{--red:#641b1b;--red2:#431010;--gold:#c6a04a;--paper:#f6e9c9;--paper2:#ead6a8;--ink:#2d2117;--muted:#75634b;--green:#356744;--bad:#913b32;--bg:#cdb98e;--line:#b7985d;--card:#fff7df}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Georgia,"Times New Roman",serif;background:radial-gradient(circle at 50% 0,#f1dfb8 0,#cdb98e 65%,#b79e70);color:var(--ink)}
+body.dark{--bg:#171311;--paper:#2a221b;--paper2:#211a15;--ink:#f0dfba;--muted:#bba98b;--card:#30271f;--line:#806a3d;background:#171311}
+header{padding:calc(14px + env(safe-area-inset-top)) 15px 13px;background:linear-gradient(#812727,#501313);color:#f8e7b5;text-align:center;position:sticky;top:0;z-index:10;box-shadow:0 3px 15px #0006}
+.logo{font-size:24px;letter-spacing:2px;text-transform:uppercase;font-weight:bold}.motto{font-size:10px;opacity:.8;font-style:italic;margin-top:3px}
+nav{display:flex;gap:7px;overflow:auto;padding:9px;background:#3e1010;position:sticky;top:76px;z-index:9}nav button{flex:0 0 auto;border:1px solid #c6a04a66;background:#681d1d;color:#f8e7b5;border-radius:10px;padding:9px 12px;font:inherit}
+main{max-width:950px;margin:auto;padding:13px}.view{display:none}.view.active{display:block}
+.panel,.studycard{background:linear-gradient(135deg,var(--paper),var(--paper2));border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 25px #0002;padding:15px;margin-bottom:13px}
+h2,h3{color:var(--red);margin:3px 0 10px}body.dark h2,body.dark h3{color:#e2bc69}
+button,input,textarea,select{font:inherit}button{cursor:pointer}.primary{background:var(--red);color:white;border:0;border-radius:10px;padding:11px 14px;font-weight:bold}.secondary{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 13px}.danger{background:var(--bad);color:white;border:0;border-radius:8px;padding:7px 10px}
+input,textarea,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink)}label{font-size:12px;font-weight:bold;display:block;margin:8px 0 4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{text-align:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:11px}.num{font-size:25px;color:var(--red);font-weight:bold}body.dark .num{color:#e2bc69}
+.muted{color:var(--muted);font-size:13px}.small{font-size:11px}.hidden{display:none!important}
+.studycard{min-height:350px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;user-select:none}.latin{font-size:42px;font-weight:bold;color:var(--red2);word-break:break-word}.meaning{font-size:29px;margin-top:18px}.example{margin-top:15px;font-size:15px;font-style:italic;color:var(--muted)}.blur{filter:blur(9px)}
+.rating{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:13px}.rating button{padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}.rating .bad{background:var(--bad);color:#fff}.rating .good{background:var(--green);color:#fff}
+.listitem{display:grid;grid-template-columns:1fr 1fr 85px 42px;gap:7px;align-items:center;padding:8px 0;border-bottom:1px solid #b99c6333}.tag{display:inline-block;background:var(--red);color:white;border-radius:20px;padding:3px 7px;font-size:10px}
+#drop{border:2px dashed #a18045;border-radius:12px;padding:18px;text-align:center;background:#fff7df33}.preview{max-width:100%;max-height:280px;margin-top:10px;border-radius:9px}
+.notice{padding:10px;border-radius:10px;background:#8b6d2830;border:1px solid #a8874b;margin:8px 0;font-size:13px}.success{background:#35674422}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:#0002;border-radius:20px;overflow:hidden;margin:8px 0 13px}.bar{height:100%;width:0;background:var(--gold)}
+canvas{max-width:100%}
+footer{text-align:center;padding:20px;font-size:11px;color:var(--muted)}
+@media(max-width:620px){.grid2{grid-template-columns:1fr}.grid4{grid-template-columns:1fr 1fr}.rating{grid-template-columns:1fr 1fr}.latin{font-size:34px}.meaning{font-size:25px}.listitem{grid-template-columns:1fr 1fr 70px 35px}}
+</style>
+</head>
+<body>
+<header><div class="logo">Vocabula Romana</div><div class="motto">Discere · Repetere · Meminisse</div></header>
+<nav>
+<button onclick="show('home')">🏛️ Lernforum</button><button onclick="show('scan')">📜 Scannen</button><button onclick="show('cards')">🗃️ Karten</button><button onclick="show('stats')">📊 Tabularium</button><button onclick="show('settings')">⚙️ Einstellungen</button>
+</nav>
+<main>
+<section id="home" class="view active">
+<div class="grid3"><div class="stat"><div class="num" id="dueN">0</div>fällig</div><div class="stat"><div class="num" id="totalN">0</div>Karten</div><div class="stat"><div class="num" id="learnedN">0</div>gelernt</div></div>
+<div id="homeEmpty" class="panel"><h2>Salve, discipule!</h2><p>Dein Tabularium ist noch leer. Scanne deine erste Vokabelseite oder lege Karten manuell an.</p><button class="primary" onclick="show('scan')">📸 Seite scannen</button> <button class="secondary" onclick="openEditor()">＋ Karte</button></div>
+<div id="studyArea" class="hidden">
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="studycard" onclick="flip()"><span class="tag" id="deckTag"></span><div class="latin" id="sLatin"></div><div class="meaning blur" id="sGerman"></div><div class="example blur" id="sExample"></div><div class="muted small" id="flipHint">Tippen zum Aufdecken</div></div>
+<div class="rating hidden" id="ratings"><button class="bad" onclick="rate(0)">❌ Nicht gewusst</button><button onclick="rate(1)">😬 Schwer</button><button class="good" onclick="rate(2)">✅ Gewusst</button><button class="good" onclick="rate(3)">🟢 Sehr gut</button></div>
+<div class="row"><button class="secondary" onclick="skipCard()">Überspringen</button><button class="secondary" onclick="shuffleDue()">Mischen</button></div>
+</div>
+</section>
+
+<section id="scan" class="view">
+<div class="panel"><h2>📜 Tabula Vocabularum</h2><p>Foto machen, OCR laufen lassen, erkannte Paare prüfen und anschließend als Karten übernehmen. Kein API-Key.</p>
+<div id="drop"><input id="photo" type="file" accept="image/*" capture="environment"><div class="muted">Am besten: Seite gerade fotografieren, gute Beleuchtung, beide Spalten vollständig sichtbar.</div><img id="preview" class="preview hidden"></div>
+<div class="row" style="margin-top:10px"><button class="primary" onclick="runOCR()">🔎 Seite erkennen</button><button class="secondary" onclick="clearOCR()">Leeren</button></div>
+<div id="ocrStatus" class="notice hidden"></div>
+<label>OCR-Text</label><textarea id="ocrText" rows="8" placeholder="Hier kannst du den erkannten Text bei Bedarf korrigieren."></textarea>
+<div class="row"><button class="primary" onclick="parsePairs()">🃏 Spalten automatisch trennen</button><button class="secondary" onclick="addFromClipboard()">Einfügen</button></div>
+<div id="parsed"></div>
+</div>
+<div class="panel"><h3>💡 Scan-Tipps</h3><p class="muted">Das System versucht typische Lateinbuch-Formen wie <i>amicus, -i m.</i> zu erkennen und Überschriften/Seitenzahlen zu ignorieren. Bei schwierigen Seiten kannst du den OCR-Text direkt korrigieren.</p></div>
+</section>
+
+<section id="cards" class="view">
+<div class="panel"><h2>🗃️ Kartenarchiv</h2><div class="grid2"><input id="search" placeholder="🔎 Latein, Deutsch oder Tag suchen..." oninput="renderCards()"><select id="deckFilter" onchange="renderCards()"><option value="">Alle Stapel</option></select></div><div class="row" style="margin-top:10px"><button class="primary" onclick="openEditor()">＋ Karte</button><button class="secondary" onclick="show('scan')">📜 Scannen</button><button class="secondary" onclick="exportJSON()">⬇️ Backup</button><button class="secondary" onclick="document.getElementById('importJSON').click()">⬆️ Backup laden</button><input hidden id="importJSON" type="file" accept=".json" onchange="importJSON(this.files[0])"></div><div id="cardList"></div></div>
+</section>
+
+<section id="stats" class="view">
+<div class="panel"><h2>📊 Tabularium</h2><div class="grid3"><div class="stat"><div class="num" id="statReviews">0</div>Antworten</div><div class="stat"><div class="num" id="statAccuracy">0%</div>Trefferquote</div><div class="stat"><div class="num" id="statStreak">0</div>Tage Serie</div></div><div class="notice">Der Scheduler arbeitet mit anpassbaren Intervallen und Antwortqualität. Fehler kommen schnell zurück, sichere Karten werden zunehmend weiter auseinandergezogen.</div><canvas id="chart" width="800" height="260"></canvas></div>
+</section>
+
+<section id="settings" class="view">
+<div class="panel"><h2>⚙️ Einstellungen</h2>
+<label>Lernstapel</label><select id="defaultDeck" onchange="settings.defaultDeck=this.value;saveSettings()"></select>
+<label>Tageslimit</label><input id="dailyLimit" type="number" min="1" max="500" onchange="settings.dailyLimit=+this.value;saveSettings()">
+<label>Neue Karten pro Tag</label><input id="newLimit" type="number" min="1" max="500" onchange="settings.newLimit=+this.value;saveSettings()">
+<label>Darstellung</label><button class="secondary" onclick="toggleDark()">🌙 Hell/Dunkel</button>
+<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+<h3>Stapel</h3><div class="row"><input id="newDeck" placeholder="z. B. Lektion 7"><button class="primary" onclick="createDeck()">＋ Stapel</button></div><div id="deckList"></div>
+<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+<button class="secondary" onclick="resetProgress()">⚠️ Lernfortschritt zurücksetzen</button> <button class="danger" onclick="deleteAll()">Alles löschen</button>
+</div>
+</section>
+</main><footer>Vocabula Romana · Daten bleiben lokal in diesem Browser. OCR-Bibliothek wird bei Bedarf geladen.</footer>
+
+<div id="editor" class="hidden" style="position:fixed;inset:0;background:#0008;z-index:50;padding:18px;overflow:auto">
+<div class="panel" style="max-width:600px;margin:35px auto"><h2>🃏 Karte bearbeiten</h2><input type="hidden" id="editId"><label>Latein</label><input id="eLatin"><label>Deutsch</label><input id="eGerman"><label>Beispielsatz</label><textarea id="eExample" rows="3"></textarea><div class="grid2"><div><label>Stapel</label><select id="eDeck"></select></div><div><label>Tag</label><input id="eTag" placeholder="z. B. Lektion 4"></div></div><div class="row" style="margin-top:12px"><button class="primary" onclick="saveEditor()">Speichern</button><button class="secondary" onclick="closeEditor()">Abbrechen</button></div></div>
+</div>
+
+<script>
+const STORE='vocabulaRomanaV3';
+let data=JSON.parse(localStorage.getItem(STORE)||'null')||{cards:[],decks:['Allgemein'],reviews:[],settings:{defaultDeck:'Allgemein',dailyLimit:80,newLimit:20,dark:false}};
+let current=null,flipped=false,ocrLoaded=false;
+
+const $=id=>document.getElementById(id);
+function persist(){localStorage.setItem(STORE,JSON.stringify(data));updateAll()}
+function saveSettings(){persist()}
+function esc(s){return String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;')}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function today(){return new Date().toISOString().slice(0,10)}
+function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$(id).classList.add('active');if(id==='cards')renderCards();if(id==='stats')renderStats();if(id==='settings')renderSettings();if(id==='home')startStudy();updateAll()}
+function updateAll(){
+  let now=Date.now(), due=data.cards.filter(c=>c.due<=now&&!c.suspended).length;
+  $('dueN').textContent=due;$('totalN').textContent=data.cards.length;$('learnedN').textContent=data.cards.filter(c=>c.reps>=3&&c.level>=2).length;
+  updateDeckSelects();
+}
+function updateDeckSelects(){
+  let opts=data.decks.map(d=>`<option>${esc(d)}</option>`).join('');
+  $('deckFilter').innerHTML='<option value="">Alle Stapel</option>'+opts;
+  $('defaultDeck').innerHTML=opts;$('defaultDeck').value=data.settings.defaultDeck;
+  $('eDeck').innerHTML=opts;
+}
+function makeCard(latin,german,extra={}){
+  if(!latin||!german)return;
+  let d=extra.deck||data.settings.defaultDeck||'Allgemein';
+  if(!data.decks.includes(d))data.decks.push(d);
+  data.cards.push({id:uid(),latin:latin.trim(),german:german.trim(),example:extra.example||'',tag:extra.tag||'',deck:d,level:0,interval:0,due:Date.now(),reps:0,lapses:0,created:Date.now()});
+}
+function openEditor(id=null){
+  $('editor').classList.remove('hidden');
+  updateDeckSelects();
+  if(id){let c=data.cards.find(x=>x.id===id);$('editId').value=id;$('eLatin').value=c.latin;$('eGerman').value=c.german;$('eExample').value=c.example;$('eDeck').value=c.deck;$('eTag').value=c.tag}
+  else{$('editId').value='';$('eLatin').value='';$('eGerman').value='';$('eExample').value='';$('eDeck').value=data.settings.defaultDeck;$('eTag').value=''}
+}
+function closeEditor(){$('editor').classList.add('hidden')}
+function saveEditor(){
+  let id=$('editId').value,l=$('eLatin').value.trim(),g=$('eGerman').value.trim();if(!l||!g){alert('Latein und Deutsch fehlen.');return}
+  if(id){let c=data.cards.find(x=>x.id===id);Object.assign(c,{latin:l,german:g,example:$('eExample').value,deck:$('eDeck').value,tag:$('eTag').value})}
+  else makeCard(l,g,{example:$('eExample').value,deck:$('eDeck').value,tag:$('eTag').value});
+  persist();closeEditor();renderCards()
+}
+function renderCards(){
+  let q=($('search').value||'').toLowerCase(),df=$('deckFilter').value;
+  let arr=data.cards.filter(c=>(!df||c.deck===df)&&(!q||(c.latin+' '+c.german+' '+c.tag).toLowerCase().includes(q)));
+  $('cardList').innerHTML=arr.length?'':'<p class="muted">Keine passenden Karten.</p>';
+  arr.forEach(c=>{
+    let d=document.createElement('div');d.className='listitem';
+    d.innerHTML=`<div><b>${esc(c.latin)}</b><br><span class="muted">${esc(c.german)}</span></div><div><span class="tag">${esc(c.deck)}</span>${c.tag?` <span class="tag">${esc(c.tag)}</span>`:''}</div><button class="secondary" onclick="openEditor('${c.id}')">Bearbeiten</button><button class="danger" onclick="deleteCard('${c.id}')">✕</button>`;
+    $('cardList').appendChild(d)
+  })
+}
+function deleteCard(id){data.cards=data.cards.filter(c=>c.id!==id);persist();renderCards()}
+function dueCards(){let now=Date.now();return data.cards.filter(c=>c.due<=now&&!c.suspended).sort((a,b)=>a.due-b.due)}
+function startStudy(){
+  let arr=dueCards().slice(0,data.settings.dailyLimit);
+  if(!arr.length){$('homeEmpty').classList.remove('hidden');$('studyArea').classList.add('hidden');return}
+  $('homeEmpty').classList.add('hidden');$('studyArea').classList.remove('hidden');current=arr[0];flipped=false;renderStudy(arr.length)
+}
+function renderStudy(count){
+  $('sLatin').textContent=current.latin;$('sGerman').textContent=current.german;$('sExample').textContent=current.example?`„${current.example}“`:'';
+  $('sGerman').classList.add('blur');$('sExample').classList.add('blur');$('ratings').classList.add('hidden');$('flipHint').textContent='Tippen zum Aufdecken';$('deckTag').textContent=current.deck;
+  let total=Math.max(1,dueCards().length);$('bar').style.width=Math.min(100,((data.cards.length-total)/Math.max(1,data.cards.length))*100)+'%'
+}
+function flip(){if(!current)return;flipped=!flipped;$('sGerman').classList.toggle('blur',!flipped);$('sExample').classList.toggle('blur',!flipped);$('ratings').classList.toggle('hidden',!flipped);$('flipHint').textContent=flipped?'Bewertung auswählen':'Tippen zum Aufdecken'}
+function rate(q){
+  if(!current)return;
+  let c=current, now=Date.now(), old=c.interval||0.02;
+  let mult=[0.08,0.8,2.2,3.6][q];
+  if(q===0){c.lapses++;c.level=0;c.interval=0.02}
+  else{c.level=Math.min(8,c.level+(q>=2?1:0));c.interval=Math.min(180,Math.max(0.02,old*mult))}
+  c.reps++;c.due=now+c.interval*86400000;
+  data.reviews.push({date:today(),q});if(data.reviews.length>5000)data.reviews.shift();
+  persist();startStudy()
+}
+function skipCard(){if(current){current.due=Date.now()+5*60000;persist();startStudy()}}
+function shuffleDue(){let arr=dueCards();arr.sort(()=>Math.random()-.5);if(arr[0]){current=arr[0];renderStudy(arr.length)}}
+function createDeck(){let n=$('newDeck').value.trim();if(!n)return;if(!data.decks.includes(n))data.decks.push(n);$('newDeck').value='';persist();renderSettings()}
+function renderSettings(){
+  updateDeckSelects();$('dailyLimit').value=data.settings.dailyLimit;$('newLimit').value=data.settings.newLimit;
+  $('deckList').innerHTML=data.decks.map(d=>`<div class="row" style="padding:7px 0;border-bottom:1px solid var(--line)"><b>${esc(d)}</b><span class="muted">${data.cards.filter(c=>c.deck===d).length} Karten</span>${d!=='Allgemein'?`<button class="danger" onclick="removeDeck('${esc(d)}')">Löschen</button>`:''}</div>`).join('')
+}
+function removeDeck(d){data.cards.forEach(c=>{if(c.deck===d)c.deck='Allgemein'});data.decks=data.decks.filter(x=>x!==d);if(data.settings.defaultDeck===d)data.settings.defaultDeck='Allgemein';persist();renderSettings()}
+function toggleDark(){data.settings.dark=!data.settings.dark;document.body.classList.toggle('dark',data.settings.dark);persist()}
+function resetProgress(){if(!confirm('Nur Lernfortschritt zurücksetzen? Die Karten bleiben erhalten.'))return;data.cards.forEach(c=>{c.level=0;c.interval=0;c.due=Date.now();c.reps=0;c.lapses=0});data.reviews=[];persist();startStudy()}
+function deleteAll(){if(confirm('Wirklich ALLE Karten löschen?')){data.cards=[];data.reviews=[];persist();renderCards();startStudy()}}
+function exportJSON(){let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vocabula-romana-backup.json';a.click()}
+function importJSON(f){if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.cards||!x.decks)throw 0;data=x;persist();alert('Backup geladen.')}catch(e){alert('Ungültiges Backup.')}};r.readAsText(f)}
+async function loadTesseract(){
+  if(ocrLoaded)return;
+  $('ocrStatus').classList.remove('hidden');$('ocrStatus').textContent='OCR-Bibliothek wird geladen…';
+  await new Promise((res,rej)=>{let s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)});
+  ocrLoaded=true;
+}
+$('photo').addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;$('preview').src=URL.createObjectURL(f);$('preview').classList.remove('hidden')});
+async function runOCR(){
+  let f=$('photo').files[0];if(!f){alert('Erst ein Foto auswählen.');return}
+  try{await loadTesseract();$('ocrStatus').textContent='Bild wird analysiert…';let r=await Tesseract.recognize(f,'deu+eng',{logger:m=>{if(m.status)$('ocrStatus').textContent=m.status+' '+Math.round((m.progress||0)*100)+'%'}});$('ocrText').value=r.data.text;$('ocrStatus').textContent='✓ OCR fertig. Jetzt Spalten trennen.';parsePairs()}catch(e){$('ocrStatus').textContent='OCR konnte nicht gestartet werden. Du kannst den Text manuell einfügen.'}}
+function clean(s){return s.replace(/[¦|]/g,' ').replace(/\s+/g,' ').trim().replace(/^[•·▪◦●○]+\s*/,'').replace(/^\d+[.)]\s*/,'')}
+function latinish(s){return /(?:,\s*[-–—]|(?:ae|ī|i|is|us|um|ei|em|es|orum|arum|ibus|o|a)\b)/i.test(s)||/\b(?:m|f|n|adj|adv|v|verb)\.?\b/i.test(s)||/[āēīōūăĕĭŏŭ]/.test(s)}
+function pairLine(line){
+  line=clean(line);if(!line)return null;
+  let p=line.split(/\t+|\s{4,}|\s*;\s*|\s+[-–—]\s+/).map(x=>x.trim()).filter(Boolean);
+  if(p.length>=2)return[p[0],p.slice(1).join(' ')];
+  let m=line.match(/^(.{2,100}?\b(?:m|f|n)\.?)\s+(.{2,})$/i);if(m&&latinish(m[1]))return[m[1],m[2]];
+  m=line.match(/^(\S+(?:,\s*[^ ]+){0,3})\s+(.{2,})$/);if(m&&latinish(m[1]))return[m[1],m[2]];
+  return null
+}
+function parsePairs(){
+  let lines=$('ocrText').value.split(/\n+/),out=[],seen=new Set();
+  for(let l of lines){l=clean(l);if(!l||/^(seite|page|lektion|kapitel|vokabeln?|latein|deutsch)\b/i.test(l)||/^\d{1,4}$/.test(l))continue;let p=pairLine(l);if(p){let k=(p[0]+'|'+p[1]).toLowerCase();if(!seen.has(k)){seen.add(k);out.push(p)}}}
+  let box=$('parsed');box.innerHTML='<h3>Erkannte Karten</h3>';
+  if(!out.length){box.innerHTML+='<div class="notice">Nichts Sicheres erkannt. OCR-Text oben korrigieren und erneut versuchen.</div>';return}
+  let all=document.createElement('button');all.className='primary';all.textContent='🃏 Alle übernehmen';all.onclick=()=>{box.querySelectorAll('.pair').forEach(d=>makeCard(d.querySelector('.l').value,d.querySelector('.g').value,{deck:data.settings.defaultDeck}));persist();box.innerHTML='<div class="notice success">✓ Karten übernommen. Sie liegen im Stapel „'+esc(data.settings.defaultDeck)+'“.</div>'};box.appendChild(all);
+  out.forEach(p=>{let d=document.createElement('div');d.className='listitem pair';d.innerHTML=`<input class="l" value="${esc(p[0])}"><input class="g" value="${esc(p[1])}"><button class="primary">＋</button><button class="danger">✕</button>`;d.children[2].onclick=()=>{makeCard(d.children[0].value,d.children[1].value);d.remove();persist()};d.children[3].onclick=()=>d.remove();box.appendChild(d)})
+}
+function clearOCR(){$('ocrText').value='';$('parsed').innerHTML='';$('ocrStatus').classList.add('hidden')}
+async function addFromClipboard(){try{$('ocrText').value=await navigator.clipboard.readText();parsePairs()}catch(e){alert('Zwischenablage konnte nicht gelesen werden.')}}
+function renderStats(){
+  let rs=data.reviews, total=rs.length,good=rs.filter(x=>x.q>=2).length;$('statReviews').textContent=total;$('statAccuracy').textContent=total?Math.round(good/total*100)+'%':'0%';
+  let dates=[...new Set(rs.map(x=>x.date))].sort(),streak=0,d=new Date();for(let i=dates.length-1;i>=0;i--){let target=new Date();target.setDate(d.getDate()-streak);let iso=target.toISOString().slice(0,10);if(dates[i]===iso)streak++;else break}$('statStreak').textContent=streak;
+  let ctx=$('chart').getContext('2d'),w=800,h=260;ctx.clearRect(0,0,w,h);let last=rs.slice(-14),max=Math.max(1,...last.map(x=>x.q+1));ctx.strokeStyle='#9c7b43';ctx.beginPath();ctx.moveTo(35,15);ctx.lineTo(35,h-30);ctx.lineTo(w-15,h-30);ctx.stroke();last.forEach((x,i)=>{let bh=(x.q+1)/max*(h-60),bw=Math.max(8,(w-70)/Math.max(1,last.length)-5),xx=45+i*(w-70)/Math.max(1,last.length);ctx.fillStyle=x.q>=2?'#356744':'#913b32';ctx.fillRect(xx,h-30-bh,bw,bh)})
+}
+document.body.classList.toggle('dark',data.settings.dark);updateAll();startStudy();
+</script>
+</body></html>
